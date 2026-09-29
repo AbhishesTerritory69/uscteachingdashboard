@@ -41,12 +41,14 @@ const facultySchema = new mongoose.Schema(
 
     department: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Department"
+      ref: "Department",
+      index: true
     },
 
     isActive: {
       type: Boolean,
-      default: true
+      default: true,
+      index: true
     },
 
     displayOrder: {

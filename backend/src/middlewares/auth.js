@@ -3,11 +3,19 @@ const User = require("../models/User");
 
 const base64UrlEncode = (value) => Buffer.from(value).toString("base64url");
 
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (typeof secret !== "string" || Buffer.byteLength(secret, "utf8") < 32) {
+    throw new Error("JWT_SECRET must be configured with at least 32 bytes.");
+  }
+  return secret;
+};
+
 const signToken = (payload) => {
   const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
   const body = base64UrlEncode(JSON.stringify(payload));
   const signature = crypto
-    .createHmac("sha256", process.env.JWT_SECRET || "development-secret")
+    .createHmac("sha256", getJwtSecret())
     .update(`${header}.${body}`)
     .digest("base64url");
   return `${header}.${body}.${signature}`;
@@ -17,7 +25,7 @@ const verifyToken = (token) => {
   const parts = token.split(".");
   if (parts.length !== 3) return null;
   const expected = crypto
-    .createHmac("sha256", process.env.JWT_SECRET || "development-secret")
+    .createHmac("sha256", getJwtSecret())
     .update(`${parts[0]}.${parts[1]}`)
     .digest("base64url");
   if (!crypto.timingSafeEqual(Buffer.from(parts[2]), Buffer.from(expected))) return null;
@@ -50,4 +58,4 @@ const authorize = (...roles) => (req, res, next) => {
   next();
 };
 
-module.exports = { authorize, protect, signToken };
+module.exports = { authorize, getJwtSecret, protect, signToken };

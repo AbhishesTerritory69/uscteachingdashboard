@@ -92,13 +92,12 @@ const noticeController = createCrudController({
     "publishedAt",
     "isPublished",
     "isFeatured",
-    "createdBy",
   ],
   required: ["title", "slug"],
   publicFilter: { isPublished: true },
   populate: [{ path: "createdBy", select: "name email role" }],
-  prepare: async (data, req) => {
-    if (req.user && data.createdBy === undefined) data.createdBy = req.user._id;
+  prepare: async (data, req, operation) => {
+    if (req.user && operation === "create") data.createdBy = req.user._id;
   },
 });
 
@@ -202,16 +201,19 @@ const userController = {
   },
   create: async (req, res) => {
     try {
-      const missing = validateRequired(req.body, ["name", "email", "password"]);
+      const body = req.body ?? {};
+      if (body === null || typeof body !== "object" || Array.isArray(body))
+        return sendError(res, 400, "Request body must be a JSON object.");
+      const missing = validateRequired(body, ["name", "email", "password"]);
       if (missing.length)
         return sendError(res, 400, "Required fields are missing.", missing);
-      if (String(req.body.password).length < 6)
+      if (String(body.password).length < 6)
         return sendError(
           res,
           400,
           "Password must be at least 6 characters long.",
         );
-      const email = String(req.body.email).trim().toLowerCase();
+      const email = String(body.email).trim().toLowerCase();
       if (await User.exists({ email }))
         return sendError(
           res,
@@ -219,11 +221,11 @@ const userController = {
           "An account with this email already exists.",
         );
       const user = await User.create({
-        name: String(req.body.name).trim(),
+        name: String(body.name).trim(),
         email,
-        password: hashPassword(String(req.body.password)),
-        role: req.body.role || "editor",
-        isActive: req.body.isActive,
+        password: hashPassword(String(body.password)),
+        role: body.role || "editor",
+        isActive: body.isActive,
       });
       return res
         .status(201)
@@ -245,10 +247,13 @@ const userController = {
     try {
       if (!isValidObjectId(req.params.id))
         return sendError(res, 400, "Invalid user ID.");
+      const body = req.body ?? {};
+      if (body === null || typeof body !== "object" || Array.isArray(body))
+        return sendError(res, 400, "Request body must be a JSON object.");
       const data = Object.fromEntries(
         ["name", "email", "role", "isActive"]
-          .filter((field) => req.body[field] !== undefined)
-          .map((field) => [field, req.body[field]]),
+          .filter((field) => body[field] !== undefined)
+          .map((field) => [field, body[field]]),
       );
       if (!Object.keys(data).length)
         return sendError(res, 400, "At least one updatable field is required.");

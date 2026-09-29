@@ -8,7 +8,7 @@ const {
   validateRequired,
 } = require("../utils/controllerHelpers");
 
-const { signToken } = require("../middlewares/auth");
+const { getJwtSecret, signToken } = require("../middlewares/auth");
 
 const hashPassword = (
   password,
@@ -91,6 +91,7 @@ const register = async (req, res) => {
       );
     }
 
+    getJwtSecret();
     const exists = await User.exists({ email });
 
     if (exists) {
@@ -150,6 +151,7 @@ const login = async (req, res) => {
       );
     }
 
+    getJwtSecret();
     const user = await User.findOne({ email });
 
     if (

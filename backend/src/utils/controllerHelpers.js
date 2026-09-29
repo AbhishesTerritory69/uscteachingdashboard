@@ -6,6 +6,8 @@ const cleanString = (value) => typeof value === "string" ? value.trim() : value;
 
 const validateRequired = (body, fields) => {
   const missing = fields.filter((field) => {
+    if (body === null || typeof body !== "object" || Array.isArray(body))
+      return true;
     const value = body[field];
     return value === undefined || value === null || (typeof value === "string" && !value.trim());
   });
@@ -45,7 +47,7 @@ const handleControllerError = (res, error) => {
     return sendError(res, 400, "Invalid request data.", details);
   }
 
-  console.error(error);
+  console.error("Controller request failed:", error?.name || "Error");
   return sendError(res, 500, "An unexpected server error occurred.");
 };
 

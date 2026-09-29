@@ -1,5 +1,8 @@
 require("dotenv").config();
 
+const { getJwtSecret } = require("./src/middlewares/auth");
+getJwtSecret();
+
 const app = require("./app");
 const connectDB = require("./src/config/db");
 

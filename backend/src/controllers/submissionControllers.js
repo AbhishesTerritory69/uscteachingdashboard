@@ -48,8 +48,11 @@ const adminList = (Model, type) => async (req, res) => {
 const updateStatus = (Model, type) => async (req, res) => {
   try {
     if (!isValidObjectId(req.params.id)) return sendError(res, 400, "Invalid resource ID.");
-    if (!statusValues[type].includes(req.body.status)) return sendError(res, 400, "Invalid status value.");
-    const item = await Model.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true, runValidators: true }).lean();
+    const body = req.body;
+    if (body === null || typeof body !== "object" || Array.isArray(body))
+      return sendError(res, 400, "Request body must be a JSON object.");
+    if (!statusValues[type].includes(body.status)) return sendError(res, 400, "Invalid status value.");
+    const item = await Model.findByIdAndUpdate(req.params.id, { status: body.status }, { new: true, runValidators: true }).lean();
     if (!item) return sendError(res, 404, "Resource not found.");
     return res.json({ success: true, data: item });
   } catch (error) {
@@ -60,7 +63,10 @@ const updateStatus = (Model, type) => async (req, res) => {
 const getById = (Model) => async (req, res) => {
   try {
     if (!isValidObjectId(req.params.id)) return sendError(res, 400, "Invalid resource ID.");
-    const item = await Model.findById(req.params.id).populate("program", "name slug degree").lean();
+    let query = Model.findById(req.params.id);
+    if (Model.schema.path("program"))
+      query = query.populate("program", "name slug degree");
+    const item = await query.lean();
     if (!item) return sendError(res, 404, "Resource not found.");
     return res.json({ success: true, data: item });
   } catch (error) {
