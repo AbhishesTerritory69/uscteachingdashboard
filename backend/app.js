@@ -11,7 +11,7 @@ const resourceRoutes = require("./src/routes/resourceRoutes");
 
 const app = express();
 const corsOrigins = new Set(
-  (process.env.CORS_ORIGINS || "http://localhost:5173,http://127.0.0.1:5173")
+  (process.env.CORS_ORIGINS || "http://localhost:5173,http://127.0.0.1:5173,https://uscteachingdashboard.vercel.app/")
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean),
