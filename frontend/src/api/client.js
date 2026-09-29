@@ -1,4 +1,4 @@
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/$/, '')
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'https://uscteachingdashboard.onrender.com').replace(/\/$/, '')
 const TOKEN_KEY = 'sste-auth-token'
 
 export class ApiError extends Error {
