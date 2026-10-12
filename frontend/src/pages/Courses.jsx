@@ -309,7 +309,18 @@ export default function Courses() {
               label: item.name,
             })),
           },
-          { name: "level", label: "Level" },
+          {
+            name: "level",
+            label: "Level",
+            type: "select",
+            required: true,
+            defaultValue: "undergraduate",
+            options: [
+              { value: "undergraduate", label: "Undergraduate" },
+              { value: "graduate", label: "Graduate" },
+              { value: "post graduate", label: "Post Graduate" },
+            ],
+          },
           {
             name: "creditHours",
             label: "Credit hours",

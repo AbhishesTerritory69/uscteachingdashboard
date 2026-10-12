@@ -1,5 +1,5 @@
-import FacultyDirectory from '../components/faculty/FacultyDirectory.jsx'
+// import FacultyDirectory from '../components/faculty/FacultyDirectory.jsx'
 
-export default function AllStaff() {
-  return <FacultyDirectory />
-}
+// export default function AllStaff() {
+//   return <FacultyDirectory />
+// }

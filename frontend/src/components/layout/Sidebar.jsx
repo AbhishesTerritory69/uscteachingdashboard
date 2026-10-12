@@ -24,8 +24,8 @@ export default function Sidebar() {
     <aside className="flex h-screen w-[260px] min-w-[260px] shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-white">
       {/* Brand */}
       <div className="flex shrink-0 items-center gap-3 border-b border-slate-100 px-5 py-5">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white">
-          S
+        <div className="flex h-20 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white">
+          <img src="/Web.png" alt="Logo" className="h-full w-full object-contain" />
         </div>
 
         <div className="min-w-0">
@@ -84,7 +84,7 @@ export default function Sidebar() {
               </>
             )}
           </NavLink>
-
+{/* 
           <NavLink to="/all-staff" className={navClass}>
             {({ isActive }) => (
               <>
@@ -94,7 +94,7 @@ export default function Sidebar() {
                 <span className="min-w-0 flex-1 truncate">All Staff</span>
               </>
             )}
-          </NavLink>
+          </NavLink> */}
 
           <NavLink to="/activities" className={navClass}>
             {({ isActive }) => (

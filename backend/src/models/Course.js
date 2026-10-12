@@ -35,7 +35,9 @@ const courseSchema = new mongoose.Schema(
     },
     level: {
       type: String,
-      trim: true
+      trim: true,
+      enum: ["undergraduate", "graduate", "post graduate"],
+      default: "undergraduate"
     },
     status: {
       type: String,

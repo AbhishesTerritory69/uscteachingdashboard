@@ -13,6 +13,10 @@ import { useToast } from "../state/ToastContext.jsx";
 
 const periods = ["Trimester 1", "Trimester 2", "Trimester 3"];
 const statuses = ["scheduled", "cancelled", "completed"];
+const timeOptions = Array.from({ length: 24 }, (_, hour) => {
+  const value = `${String(hour).padStart(2, "0")}:00`;
+  return { value, label: value };
+});
 
 export default function TeachingActivities() {
   const notify = useToast();
@@ -274,7 +278,7 @@ export default function TeachingActivities() {
             name: "faculty",
             label: "Faculty",
             type: "select",
-            required: true,
+            // required: true,
             getValue: (record) => record.faculty?._id,
             options: faculty.map((person) => ({
               value: person._id,
@@ -287,61 +291,78 @@ export default function TeachingActivities() {
             required: true,
             placeholder: "2026 or 2025-2026",
           },
-          {
-            name: "academicPeriod",
-            label: "Academic period",
-            type: "select",
-            required: true,
-            options: periods.map((period) => ({
-              value: period,
-              label: period,
-            })),
-          },
-          {
-            name: "activityType",
-            label: "Activity type",
-            type: "select",
-            required: true,
-            options: [
-              "lecture",
-              "tutorial",
-              "practical",
-              "laboratory",
-              "seminar",
-            ].map((value) => ({ value, label: value })),
-          },
-          {
-            name: "day",
-            label: "Day",
-            type: "select",
-            required: true,
-            options: [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday",
-            ].map((value) => ({ value, label: value })),
-          },
+          // {
+          //   name: "academicPeriod",
+          //   label: "Academic period",
+          //   type: "select",
+          //   required: true,
+          //   options: periods.map((period) => ({
+          //     value: period,
+          //     label: period,
+          //   })),
+          // },
+          // {
+          //   name: "activityType",
+          //   label: "Activity type",
+          //   type: "select",
+          //   required: true,
+          //   options: [
+          //     "lecture",
+          //     "tutorial",
+          //     "practical",
+          //     "laboratory",
+          //     "seminar",
+          //   ].map((value) => ({ value, label: value })),
+          // },
+          // {
+          //   name: "day",
+          //   label: "Day",
+          //   type: "select",
+          //   required: true,
+          //   options: [
+          //     "Monday",
+          //     "Tuesday",
+          //     "Wednesday",
+          //     "Thursday",
+          //     "Friday",
+          //     "Saturday",
+          //     "Sunday",
+          //   ].map((value) => ({ value, label: value })),
+          // },
           {
             name: "startTime",
             label: "Start time",
+            type: "select",
             required: true,
-            placeholder: "09:00",
+            options: timeOptions,
           },
           {
             name: "endTime",
             label: "End time",
+            type: "select",
             required: true,
-            placeholder: "10:30",
+            options: timeOptions,
           },
           {
             name: "duration",
             label: "Duration (hours)",
             type: "number",
             required: true,
+            readOnly: true,
+            deriveValue: (values) => {
+              if (!values.startTime || !values.endTime) return "";
+              const [startHour, startMinute] = values.startTime
+                .split(":")
+                .map(Number);
+              const [endHour, endMinute] = values.endTime
+                .split(":")
+                .map(Number);
+              const duration =
+                endHour * 60 +
+                endMinute -
+                (startHour * 60 + startMinute);
+              return duration > 0 ? duration / 60 : "";
+            },
             min: 0,
             step: "any",
           },

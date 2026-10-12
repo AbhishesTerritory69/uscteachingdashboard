@@ -52,7 +52,7 @@ export default function Dashboard() {
     { label: 'Active courses', value: summary.courses.active, foot: `${summary.courses.allocated} allocated` },
     { label: 'Active teaching staff', value: summary.faculty.active, foot: `${summary.faculty.withAllocation} with allocation` },
     { label: 'Teaching activities', value: summary.teaching.activities, foot: `${summary.courses.unallocated} active courses unallocated` },
-    { label: 'Teaching hours', value: summary.teaching.hours, foot: 'Stored backend-calculated hours' },
+    { label: 'Teaching hours', value: summary.teaching.hours, foot: 'Stored hours' },
   ]
 
   return (
@@ -70,9 +70,9 @@ export default function Dashboard() {
       <div className="grid cards">
         {metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}
       </div>
-      <section className="section grid two-col">
+      <section className="section grid one-col">
         <ActivityTable rows={activities} />
-        <AlertPanel alerts={snapshot.alerts} />
+        {/* <AlertPanel alerts={snapshot.alerts} /> */}
       </section>
       <section className="section grid two-col">
         <Card className="panel">
@@ -92,7 +92,7 @@ export default function Dashboard() {
               <strong>{item.teachingHours} hrs</strong>
             </div>
           ))}
-        </Card>
+        </Card> 
       </section>
     </>
   )

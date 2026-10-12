@@ -127,14 +127,14 @@ export default function FacultyDirectory({ activeOnly = false }) {
   return (
     <>
       <div className="page-header">
-        <div><h2>{activeOnly ? 'Staff' : 'All Staff'}</h2><p className="subtle">Faculty directory and backend workload details.</p></div>
-        <Button onClick={openCreate}>Add faculty</Button>
+        <div><h2>{activeOnly ? 'Staff' : 'All Staff'}</h2></div>
+        <Button onClick={openCreate}>Add Staff</Button>
       </div>
       <div className="grid cards">
         <Card className="metric"><div className="metric-label">Loaded Faculty</div><div className="metric-value">{pagination?.total ?? faculty.length}</div><div className="metric-foot">Up to 100 records per request</div></Card>
         <Card className="metric"><div className="metric-label">Active</div><div className="metric-value">{activeCount}</div><div className="metric-foot">In the loaded directory page</div></Card>
         {!activeOnly && <Card className="metric"><div className="metric-label">Inactive</div><div className="metric-value">{inactiveCount}</div><div className="metric-foot">Inactive Faculty remain visible</div></Card>}
-        <Card className="metric"><div className="metric-label">Departments</div><div className="metric-value">{departments.length}</div><div className="metric-foot">Loaded from the API</div></Card>
+        <Card className="metric"><div className="metric-label">Departments</div><div className="metric-value">{departments.length}</div><div className="metric-foot">Saved data</div></Card>
       </div>
       <section className="section">
         <div className="section-head"><h2>{activeOnly ? 'Teaching staff' : 'Faculty directory'}</h2><span className="subtle">{visibleFaculty.length} shown · {pagination?.total ?? 0} total</span></div>
@@ -154,7 +154,7 @@ export default function FacultyDirectory({ activeOnly = false }) {
       </section>
       <EntityModal
         open={modalOpen}
-        title={editing ? 'Edit faculty member' : 'Add faculty member'}
+        title={editing ? 'Edit faculty member' : 'Add Staff'}
         record={editing}
         onClose={() => setModalOpen(false)}
         onSubmit={saveFaculty}
@@ -163,10 +163,10 @@ export default function FacultyDirectory({ activeOnly = false }) {
           { name: 'designation', label: 'Designation', required: true },
           { name: 'department', label: 'Department', type: 'select', getValue: (record) => record.department?._id, options: departments.map((item) => ({ value: item._id, label: item.name })) },
           { name: 'email', label: 'Email', type: 'email' },
-          { name: 'qualification', label: 'Qualification' },
-          { name: 'specialization', label: 'Specialization' },
+          { name: 'qualification', label: 'Staff Qualification' },
+          // { name: 'specialization', label: 'Specialization' },
           { name: 'phone', label: 'Phone' },
-          { name: 'displayOrder', label: 'Display order', type: 'number', step: 1 },
+          // { name: 'displayOrder', label: 'Display order', type: 'number', step: 1 },
           { name: 'isActive', label: 'Active', type: 'checkbox', defaultValue: true },
           { name: 'bio', label: 'Biography', type: 'textarea' },
         ]}

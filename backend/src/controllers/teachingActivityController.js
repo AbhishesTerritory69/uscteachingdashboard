@@ -30,17 +30,12 @@ const writableFields = [
   "status",
 ];
 const requiredFields = [
-  "course",
-  "faculty",
   "academicYear",
-  "academicPeriod",
-  "activityType",
-  "day",
   "startTime",
   "endTime",
-  "duration",
   "occurrences",
 ];
+const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
 const populateOptions = [
   {
     path: "course",
@@ -202,6 +197,18 @@ const create = async (req, res) => {
         .filter((field) => body[field] !== undefined)
         .map((field) => [field, body[field]]),
     );
+    if (
+      data.duration === undefined &&
+      timePattern.test(data.startTime || "") &&
+      timePattern.test(data.endTime || "")
+    ) {
+      const toMinutes = (time) => {
+        const [hours, minutes] = time.split(":").map(Number);
+        return hours * 60 + minutes;
+      };
+      const spanMinutes = toMinutes(data.endTime) - toMinutes(data.startTime);
+      if (spanMinutes > 0) data.duration = spanMinutes / 60;
+    }
     if (!(await validateReferences(data, res))) return;
 
     const activity = new TeachingActivity(data);

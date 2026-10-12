@@ -25,12 +25,11 @@ const teachingActivitySchema = new mongoose.Schema(
     course: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
-      required: true,
     },
     faculty: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Faculty",
-      required: true,
+      // required: true,
     },
     academicYear: {
       type: String,
@@ -43,17 +42,17 @@ const teachingActivitySchema = new mongoose.Schema(
     },
     academicPeriod: {
       type: String,
-      required: true,
+      // required: true,
       enum: academicPeriods,
     },
     activityType: {
       type: String,
-      required: true,
+      // required: true,
       enum: activityTypes,
     },
     day: {
       type: String,
-      required: true,
+      // required: true,
       enum: weekdays,
     },
     startTime: {
@@ -82,7 +81,7 @@ const teachingActivitySchema = new mongoose.Schema(
     },
     teachingHours: {
       type: Number,
-      required: true,
+      // required: true,
       min: 0,
     },
     room: {

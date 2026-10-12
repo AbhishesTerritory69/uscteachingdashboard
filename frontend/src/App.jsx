@@ -3,7 +3,7 @@ import AsyncState from './components/common/AsyncState.jsx'
 import AppLayout from './components/layout/AppLayout.jsx'
 import Administration from './pages/Administration.jsx'
 import Academics from './pages/Academics.jsx'
-import AllStaff from './pages/AllStaff.jsx'
+// import AllStaff from './pages/AllStaff.jsx'
 import CourseOutlines from './pages/CourseOutlines.jsx'
 import Courses from './pages/Courses.jsx'
 import Dashboard from './pages/Dashboard.jsx'
@@ -49,7 +49,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="courses" element={<Courses />} />
             <Route path="staff" element={<Staff />} />
-            <Route path="all-staff" element={<AllStaff />} />
+            {/* <Route path="all-staff" element={<AllStaff />} /> */}
             <Route path="activities" element={<TeachingActivities />} />
             <Route path="outlines" element={<CourseOutlines />} />
             <Route path="academics" element={<Academics />} />

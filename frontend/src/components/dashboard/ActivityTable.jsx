@@ -16,7 +16,6 @@ export default function ActivityTable({ rows }) {
     <Card className="panel">
       <div className="section-head">
         <h2>Recent teaching activities</h2>
-        <span className="subtle">Backend records</span>
       </div>
       <Table columns={columns} rows={rows} caption="Current course allocations" />
     </Card>

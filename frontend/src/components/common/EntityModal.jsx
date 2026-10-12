@@ -16,6 +16,17 @@ const toInputValue = (field, record) => {
   return String(raw)
 }
 
+const deriveValues = (fields, values, record) => {
+  const next = { ...values }
+  for (const field of fields) {
+    if (field.deriveValue) {
+      const value = field.deriveValue(next, record)
+      next[field.name] = value === undefined || value === null ? '' : String(value)
+    }
+  }
+  return next
+}
+
 export default function EntityModal({ open, title, record, fields, onClose, onSubmit, submitLabel = 'Save changes' }) {
   const [values, setValues] = useState({})
   const [error, setError] = useState('')
@@ -30,12 +41,13 @@ export default function EntityModal({ open, title, record, fields, onClose, onSu
     const signature = `${record?._id ?? 'new'}:${fields.map((field) => field.name).join('|')}`
     if (initializedFor.current === signature) return
     initializedFor.current = signature
-    setValues(Object.fromEntries(fields.map((field) => [field.name, toInputValue(field, record)])))
+    const initialValues = Object.fromEntries(fields.map((field) => [field.name, toInputValue(field, record)]))
+    setValues(deriveValues(fields, initialValues, record))
     setError('')
   }, [open, record?._id, fields])
 
   const changeValue = (field, value) => {
-    setValues((current) => ({ ...current, [field.name]: value }))
+    setValues((current) => deriveValues(fields, { ...current, [field.name]: value }, record))
     setError('')
   }
 
@@ -72,7 +84,13 @@ export default function EntityModal({ open, title, record, fields, onClose, onSu
       setSaving(true)
       await onSubmit(body)
     } catch (submitError) {
-      setError(submitError?.message || 'Unable to save these changes.')
+      const details = submitError?.details
+      const detailMessage = Array.isArray(details)
+        ? `Missing fields: ${details.join(', ')}.`
+        : details && typeof details === 'object'
+          ? Object.values(details).join(' ')
+          : ''
+      setError([submitError?.message || 'Unable to save these changes.', detailMessage].filter(Boolean).join(' '))
     } finally {
       setSaving(false)
     }
@@ -102,7 +120,7 @@ export default function EntityModal({ open, title, record, fields, onClose, onSu
                   ) : field.type === 'textarea' || field.type === 'json' || field.type === 'lines' ? (
                     <textarea id={`entity-${field.name}`} rows={field.type === 'json' ? 6 : 3} value={values[field.name] ?? ''} required={field.required} placeholder={field.placeholder} onChange={(event) => changeValue(field, event.target.value)} />
                   ) : (
-                    <input id={`entity-${field.name}`} type={['number', 'email', 'time', 'date', 'password'].includes(field.type) ? field.type : 'text'} value={values[field.name] ?? ''} required={field.required} min={field.min} step={field.step} autoComplete={field.type === 'password' ? 'new-password' : undefined} onChange={(event) => changeValue(field, event.target.value)} />
+                    <input id={`entity-${field.name}`} type={['number', 'email', 'time', 'date', 'password'].includes(field.type) ? field.type : 'text'} value={values[field.name] ?? ''} required={field.required} min={field.min} step={field.step} readOnly={field.readOnly} autoComplete={field.type === 'password' ? 'new-password' : undefined} onChange={(event) => changeValue(field, event.target.value)} />
                   )}
                 </>
               )}
