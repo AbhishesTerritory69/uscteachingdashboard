@@ -69,8 +69,12 @@ export default function TeachingActivities() {
   }, [filters, reload]);
 
   const save = async (body) => {
-    if (editor?._id) await teachingActivitiesApi.patch(editor._id, body);
-    else await teachingActivitiesApi.create(body);
+    const activityData = {
+      ...body,
+      academicPeriod: body.trimester,
+    };
+    if (editor?._id) await teachingActivitiesApi.patch(editor._id, activityData);
+    else await teachingActivitiesApi.create(activityData);
     notify(
       editor?._id ? "Teaching activity updated." : "Teaching activity created.",
     );
@@ -292,6 +296,19 @@ export default function TeachingActivities() {
             label: "Academic year",
             required: true,
             placeholder: "2026 or 2025-2026",
+          },
+          {
+            name: "trimester",
+            label: "Trimester",
+            type: "select",
+            required: true,
+             options: [
+    { value: "None", label: "None" },
+    ...periods.map((period) => ({
+      value: period,
+      label: period,
+    })),
+  ],
           },
           {
             name: "date",

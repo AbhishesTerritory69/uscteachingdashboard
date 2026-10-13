@@ -19,6 +19,7 @@ const writableFields = [
   "faculty",
   "academicYear",
   "academicPeriod",
+  "trimester",
   "date",
   "activityType",
   "day",

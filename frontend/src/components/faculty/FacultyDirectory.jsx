@@ -33,7 +33,7 @@ export default function FacultyDirectory({ activeOnly = false }) {
   const [selected, setSelected] = useState(null)
   const [facultyDetail, setFacultyDetail] = useState(null)
   const [workload, setWorkload] = useState(emptyWorkload)
-  const [workloadFilters, setWorkloadFilters] = useState({ academicYear: '', academicPeriod: '' })
+  const [workloadFilters, setWorkloadFilters] = useState({ academicYear: '', trimester: '' })
   const [workloadLoading, setWorkloadLoading] = useState(false)
   const [workloadError, setWorkloadError] = useState('')
 
@@ -60,13 +60,16 @@ export default function FacultyDirectory({ activeOnly = false }) {
     let current = true
     setWorkloadLoading(true)
     setWorkloadError('')
-    facultyApi.workload(selected._id, workloadFilters).then((response) => {
+    facultyApi.workload(selected._id, {
+      ...workloadFilters,
+      academicPeriod: workloadFilters.trimester,
+    }).then((response) => {
       if (current) setWorkload(response.data || emptyWorkload)
     }).catch((requestError) => {
       if (current) setWorkloadError(requestError.message || 'Workload could not be loaded.')
     }).finally(() => { if (current) setWorkloadLoading(false) })
     return () => { current = false }
-  }, [selected?._id, workloadFilters.academicYear, workloadFilters.academicPeriod])
+  }, [selected?._id, workloadFilters.academicYear, workloadFilters.trimester])
 
   const visibleFaculty = useMemo(() => faculty.filter((person) => {
     const query = search.trim().toLowerCase()
@@ -114,7 +117,7 @@ export default function FacultyDirectory({ activeOnly = false }) {
     { key: 'actions', label: 'Actions', render: (person) => (
       <div className="record-actions">
         <Button variant="secondary" onClick={() => viewFaculty(person)}>View</Button>
-        <Button variant="secondary" onClick={() => { setSelected(person); setWorkloadFilters({ academicYear: '', academicPeriod: '' }) }}>Workload</Button>
+        <Button variant="secondary" onClick={() => { setSelected(person); setWorkloadFilters({ academicYear: '', trimester: '' }) }}>Workload</Button>
         <Button variant="secondary" onClick={() => openEdit(person)}>Edit</Button>
         <Button variant="secondary" onClick={() => deleteFaculty(person)}>Delete</Button>
       </div>
@@ -177,8 +180,8 @@ export default function FacultyDirectory({ activeOnly = false }) {
           <select className="select" id="workload-year" value={workloadFilters.academicYear} onChange={(event) => setWorkloadFilters({ ...workloadFilters, academicYear: event.target.value })}>
             <option value="">All years</option><option value="2026">2026</option><option value="2025">2025</option>
           </select>
-          <label className="sr-only" htmlFor="workload-period">Academic period</label>
-          <select className="select" id="workload-period" value={workloadFilters.academicPeriod} onChange={(event) => setWorkloadFilters({ ...workloadFilters, academicPeriod: event.target.value })}>
+          <label className="sr-only" htmlFor="workload-trimester">Trimester</label>
+          <select className="select" id="workload-trimester" value={workloadFilters.trimester} onChange={(event) => setWorkloadFilters({ ...workloadFilters, trimester: event.target.value })}>
             <option value="">All periods</option><option>Trimester 1</option><option>Trimester 2</option><option>Trimester 3</option>
           </select>
         </div>
@@ -194,7 +197,7 @@ export default function FacultyDirectory({ activeOnly = false }) {
               <h3 className="section">Course breakdown</h3>
               <Table columns={[{ key: 'course', label: 'Course', render: (row) => <><strong>{row.course?.code}</strong><div className="subtle">{row.course?.name}</div><div className="person-meta">{row.course?.department?.name || '—'} · {row.course?.program?.name || '—'}</div></> }, { key: 'activityCount', label: 'Activities' }, { key: 'teachingHours', label: 'Hours' }]} rows={workload.courses} caption="Workload grouped by course" />
               <h3 className="section">Activity breakdown</h3>
-              <Table columns={[{ key: 'activityType', label: 'Activity' }, { key: 'course', label: 'Course', render: (row) => row.course?.code || 'Unlinked' }, { key: 'academicYear', label: 'Academic context', render: (row) => `${row.academicYear} · ${row.academicPeriod}` }, { key: 'teachingHours', label: 'Hours' }, { key: 'status', label: 'Status' }]} rows={workload.activities} caption="Workload activities" />
+              <Table columns={[{ key: 'activityType', label: 'Activity' }, { key: 'course', label: 'Course', render: (row) => row.course?.code || 'Unlinked' }, { key: 'academicYear', label: 'Academic year' }, { key: 'trimester', label: 'Trimester', render: (row) => row.trimester || row.academicPeriod || '—' }, { key: 'teachingHours', label: 'Hours' }, { key: 'status', label: 'Status' }]} rows={workload.activities} caption="Workload activities" />
             </>
           )}
           </>

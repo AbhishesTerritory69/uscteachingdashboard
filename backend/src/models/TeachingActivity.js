@@ -45,6 +45,10 @@ const teachingActivitySchema = new mongoose.Schema(
       // required: true,
       enum: academicPeriods,
     },
+    trimester: {
+      type: String,
+      enum: academicPeriods,
+    },
     date: {
       type: Date,
       validate: {

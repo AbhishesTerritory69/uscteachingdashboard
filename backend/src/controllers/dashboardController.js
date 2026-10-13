@@ -277,8 +277,20 @@ const facultyWorkload = async (req, res) => {
   try {
     if (!isValidObjectId(req.params.facultyId))
       return sendError(res, 400, "Invalid faculty ID.");
-    const activityFilter = getAcademicFilter(req.query, res);
+    const activityFilter = getAcademicFilter(
+      { academicYear: req.query.academicYear },
+      res,
+    );
     if (!activityFilter) return;
+    const trimester = req.query.trimester ?? req.query.academicPeriod;
+    if (trimester !== undefined) {
+      if (!academicPeriods.includes(trimester))
+        return sendError(res, 400, "Invalid trimester value.");
+      activityFilter.$or = [
+        { trimester },
+        { trimester: { $exists: false }, academicPeriod: trimester },
+      ];
+    }
 
     const faculty = await Faculty.findById(req.params.facultyId)
       .populate("department", "name slug")
@@ -351,6 +363,7 @@ const facultyWorkload = async (req, res) => {
                 },
                 academicYear: 1,
                 academicPeriod: 1,
+                trimester: 1,
                 activityType: 1,
                 day: 1,
                 startTime: 1,
