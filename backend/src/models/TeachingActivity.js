@@ -45,6 +45,19 @@ const teachingActivitySchema = new mongoose.Schema(
       // required: true,
       enum: academicPeriods,
     },
+    date: {
+      type: Date,
+      validate: {
+        validator(value) {
+          if (!value) return true;
+          const match = /^(\d{4})(?:-\d{4})?$/.exec(this.academicYear || "");
+          return Boolean(
+            match && value.getUTCFullYear() === Number(match[1]),
+          );
+        },
+        message: "date must fall within the start year of academicYear.",
+      },
+    },
     activityType: {
       type: String,
       // required: true,

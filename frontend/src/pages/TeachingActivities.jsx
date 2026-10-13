@@ -17,6 +17,8 @@ const timeOptions = Array.from({ length: 24 }, (_, hour) => {
   const value = `${String(hour).padStart(2, "0")}:00`;
   return { value, label: value };
 });
+const getAcademicYearStart = (academicYear) =>
+  /^\d{4}(?:-\d{4})?$/.exec(academicYear?.trim() || "")?.[0].slice(0, 4) || "";
 
 export default function TeachingActivities() {
   const notify = useToast();
@@ -291,6 +293,27 @@ export default function TeachingActivities() {
             required: true,
             placeholder: "2026 or 2025-2026",
           },
+          {
+            name: "date",
+            label: "Date",
+            type: "date",
+            required: true,
+            disabled: (values) => !getAcademicYearStart(values.academicYear),
+            min: (values) => {
+              const year = getAcademicYearStart(values.academicYear);
+              return year ? `${year}-01-01` : undefined;
+            },
+            max: (values) => {
+              const year = getAcademicYearStart(values.academicYear);
+              return year ? `${year}-12-31` : undefined;
+            },
+            deriveValue: (values) => {
+              const year = getAcademicYearStart(values.academicYear);
+              return values.date?.startsWith(`${year}-`) ? values.date : "";
+            },
+            getValue: (record) =>
+              record.date ? new Date(record.date).toISOString().slice(0, 10) : "",
+          },
           // {
           //   name: "academicPeriod",
           //   label: "Academic period",
@@ -314,21 +337,21 @@ export default function TeachingActivities() {
           //     "seminar",
           //   ].map((value) => ({ value, label: value })),
           // },
-          // {
-          //   name: "day",
-          //   label: "Day",
-          //   type: "select",
-          //   required: true,
-          //   options: [
-          //     "Monday",
-          //     "Tuesday",
-          //     "Wednesday",
-          //     "Thursday",
-          //     "Friday",
-          //     "Saturday",
-          //     "Sunday",
-          //   ].map((value) => ({ value, label: value })),
-          // },
+          {
+            name: "day",
+            label: "Day",
+            type: "select",
+            // required: true,
+            options: [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday",
+            ].map((value) => ({ value, label: value })),
+          },
           {
             name: "startTime",
             label: "Start time",
@@ -465,6 +488,12 @@ export default function TeachingActivities() {
       <span className="text-[15px] font-semibold text-slate-900">
         {detail.data.day || "—"}
       </span>
+
+      {detail.data.date && (
+        <span className="text-sm text-slate-500">
+          {new Date(detail.data.date).toISOString().slice(0, 10)}
+        </span>
+      )}
 
       <span className="text-sm text-slate-500">
         {detail.data.startTime || "—"}{" "}

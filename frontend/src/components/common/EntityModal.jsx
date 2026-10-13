@@ -120,7 +120,7 @@ export default function EntityModal({ open, title, record, fields, onClose, onSu
                   ) : field.type === 'textarea' || field.type === 'json' || field.type === 'lines' ? (
                     <textarea id={`entity-${field.name}`} rows={field.type === 'json' ? 6 : 3} value={values[field.name] ?? ''} required={field.required} placeholder={field.placeholder} onChange={(event) => changeValue(field, event.target.value)} />
                   ) : (
-                    <input id={`entity-${field.name}`} type={['number', 'email', 'time', 'date', 'password'].includes(field.type) ? field.type : 'text'} value={values[field.name] ?? ''} required={field.required} min={field.min} step={field.step} readOnly={field.readOnly} autoComplete={field.type === 'password' ? 'new-password' : undefined} onChange={(event) => changeValue(field, event.target.value)} />
+                    <input id={`entity-${field.name}`} type={['number', 'email', 'time', 'date', 'password'].includes(field.type) ? field.type : 'text'} value={values[field.name] ?? ''} required={field.required} disabled={typeof field.disabled === 'function' ? field.disabled(values) : field.disabled} min={typeof field.min === 'function' ? field.min(values) : field.min} max={typeof field.max === 'function' ? field.max(values) : field.max} step={field.step} readOnly={field.readOnly} autoComplete={field.type === 'password' ? 'new-password' : undefined} onChange={(event) => changeValue(field, event.target.value)} />
                   )}
                 </>
               )}
